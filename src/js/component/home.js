@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export function Home() {
 	let [lista, setLista] = useState([]);
@@ -6,30 +6,26 @@ export function Home() {
 	const addTarea = tarea => {
 		if (tarea.key === "Enter") {
 			setLista([...lista, tarea.target.value]);
+			tarea.target.value = "";
 		}
 	};
 
-	//let remove = lista.splice(0, 1);
-
-	const items = [];
-
-	for (const [index, value] of lista.entries()) {
-		items.push(
-			<li className="list-group-item" key={index}>
-				<button
-					className="btn btn-default btn-xs pull-right remove-item float:right"
-					onClick={remove}>
-					<i className="fas fa-trash-alt text-danger mx-2"></i>
-				</button>
-				{value}
-			</li>
-		);
+	function delTarea(pos) {
+		const tempLista = [...lista];
+		tempLista.splice(pos, 1);
+		setLista(tempLista);
 	}
 
-	const remove = () => {
-		lista.pop();
-		console.log("removed");
-	};
+	const newLista = lista.map((value, index) => (
+		<li className="list-group-item" key={index}>
+			<button
+				onClick={() => delTarea(index)}
+				className="btn btn-default btn-xs pull-right remove-item">
+				<i className="fas fa-trash-alt text-danger mx-2"></i>
+			</button>
+			{value}
+		</li>
+	));
 
 	return (
 		<div className="text-center mt-5">
@@ -38,15 +34,15 @@ export function Home() {
 					<div className="col-12 col-md-6">
 						<h6 className="text-muted">To Do List</h6>
 						<input
-							id="tarea"
 							onKeyDown={addTarea}
 							className="form-control"
 							type="text"
-							placeholder="What needs to be done?"></input>
+							placeholder="Add a thing"></input>
 						<br />
-						<ul className="list-group">{items}</ul>
+						<ul className="list-group">{newLista}</ul>
 					</div>
 				</div>
+				<p>Total Items: {lista.length}</p>
 			</div>
 		</div>
 	);
